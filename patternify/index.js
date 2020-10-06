@@ -2,7 +2,8 @@ const express = require ('express');
 const cors = require ('cors');
 const multer = require('multer');
 const path = require('path');
-const {spawn} = require('child_process');
+var fs = require('fs');
+const Custom_multer_storage = require('./server_modules/custom_multer_storage');
 
 const fileSize_max = 1000000;
 
@@ -20,7 +21,7 @@ fileFilter = (req, file, cb) => {
    }
 };
 
-const storage = multer.diskStorage({
+var storage = multer.diskStorage({
   destination: function (req, file, cb) {
   cb(null, './uploads')
   },
