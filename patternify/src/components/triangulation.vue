@@ -49,7 +49,7 @@ export default {
       formData.append('file', this.file);
       try {
         await axios.post('http://localhost:5000/upload', formData);
-        this.message = 'Uploaded'
+        this.message = 'Uploaded';
       } catch (err) {
         console.log(err);
         this.message = err.response.data.error

@@ -1,4 +1,7 @@
-#!/usr/bin/python
+import sys
+# if (len(sys.argv) > 0):    print 'yes. First param:'+sys.argv[1]+'#'
+
+# print 'script started'
 
 import cv2
 import numpy as np
@@ -10,6 +13,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
+import io
+
+import os
+
+from datetime import date
 
 #############################################
 
@@ -81,10 +89,28 @@ def fix_image(img):
 
 resize_size = 600
 linewidth_var = 0.5
-noise_amount = 400
+noise_amount = 50
 
-img = cv2.imread('input.jpg',-1)
-img_bw = cv2.imread('input.jpg',0)
+today = date.today()
+dt_string = today.strftime("%S")
+os_dir_path = os.path.dirname(os.path.abspath(__file__))
+
+parent_path = os_dir_path.rsplit('\\', 1)[0]
+
+# file_path_from_node = os.path.dirname(os.path.abspath(__file__)) + '\\' + "input.jpg";
+file_path_from_node = os_dir_path + '\\' + sys.argv[1];
+
+img = cv2.imread(file_path_from_node,-1)
+img_bw = cv2.imread(file_path_from_node,0)
+
+# print 'loaded a picture'
+#
+# file_path_from_node = sys.argv[1];
+#
+# print 'First param:' + file_path_from_node
+
+# img = cv2.imread(file_path_from_node,-1)
+# img_bw = cv2.imread(file_path_from_node,0)
 
 img = fix_image(img)
 img_bw = fix_image(img_bw)
@@ -100,12 +126,17 @@ resized_image_g = g
 resized_image_r = r
 
 #resize
-find_lines_low_treshold = 150
-find_lines_high_treshold = 200
+find_lines_low_treshold = 50
+find_lines_high_treshold = 120
 
 resized_image = image_resize(img_bw, resize_size)
 
 only_lines_image = cv2.Canny(resized_image, find_lines_low_treshold , find_lines_high_treshold)
+
+img = cv2.rotate(only_lines_image, cv2.ROTATE_90_CLOCKWISE)
+img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+cv2.imwrite(parent_path + '\\uploads\\' + 'lines.jpg', img)
 
 #ans will be an array to store points
 ans = []
@@ -132,7 +163,7 @@ ans.append([width, height])
 ans.append([width, 0])
 
 #slice array - that simplifies a picture
-##ans = np.array(ans)[::2]
+# ans = np.array(ans)[::2]
 
 ##print ans - print a finished arrays
 
@@ -144,15 +175,6 @@ patches = []
 printing_patches = []
 
 # triangles in a form of [xy, xy, xy]  - points[tri.simplices[index,:]]
-
-# print resized_image.shape
-# print resized_image_r.shape
-# print resized_image_g.shape
-# print resized_image_b.shape
-# print points[tri.simplices].shape
-# print 'this'
-# print width
-# print height
 
 for i in range(len(tri.simplices)):
 
@@ -207,4 +229,15 @@ plt.axis('equal')
 
 # plt.subplots_adjust(left=0.1, right=0.2, top=0.2, bottom=0.1)
 
-plt.savefig('foo.jpg', dpi=70, bbox_inches='tight', pad_inches = 0)
+
+
+plt.savefig(parent_path + '\\uploads\\' + dt_string + '.jpg', dpi=70, bbox_inches='tight', pad_inches = 0)
+
+# plt.savefig(buf, dpi=70, bbox_inches='tight', pad_inches = 0)
+
+# buf = io.BytesIO()
+# fig.savefig(buf, format='jpg')
+# plt.close(fig)
+# data=buf.getvalue()
+#
+# print data
